@@ -42,7 +42,7 @@ static void XmlGenerateResponse(Value &result, Stream &response);
 static void XmlGenerateFaultResponse(int errorCode, std::string const& errorMsg, Stream &response);
 static void XmlGenerateFaultValue(int errorCode, std::string const& errorMsg, Value &faultValue);
 
-log_define("AnyRPC.RpcHandler");
+log_define("AnyRPC.RpcHandler")
 
 ////////////////////////////////////////////////////////////////////////////////
 
