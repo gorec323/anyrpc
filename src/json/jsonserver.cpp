@@ -41,7 +41,7 @@ static void JsonExecuteSingleRequest(MethodManager* manager, Value& message, Val
 static void JsonGenerateResponse(Value& result, Value& id, Value& response);
 static void JsonGenerateFaultResponse(int errorCode, std::string const& errorMsg, Value& id, Value& response);
 
-log_define("AnyRPC.RpcHandler");
+log_define("AnyRPC.RpcHandler")
 
 ////////////////////////////////////////////////////////////////////////////////
 

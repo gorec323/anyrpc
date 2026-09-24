@@ -28,7 +28,7 @@ namespace anyrpc
 namespace internal
 {
 
-log_define("AnyRPC.Unicode");
+log_define("AnyRPC.Unicode")
 
 std::string ConvertToUtf8(const wchar_t* ws)
 {
