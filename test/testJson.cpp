@@ -85,9 +85,23 @@ static string RemoveWhiteSpace(const char* inString, size_t length)
     return outString;
 }
 
-static string ParseData(char* filename, string& inString)
+static string ParseData(const char* filename, string& inString)
 {
-    FILE* fp = fopen(filename, "r");
+    inString = "";
+#if defined(ANYRPC_SAMPLE_DIR)
+    char fullPath[2048];
+    snprintf(fullPath, sizeof(fullPath), "%s/%s", ANYRPC_SAMPLE_DIR, filename);
+    const char* path = fullPath;
+#else
+    const char* path = filename;
+#endif
+
+    FILE* fp = fopen(path, "r");
+    if (fp == 0)
+    {
+        printf("ParseData: Unable to open file '%s'\n", path);
+        return string();
+    }
     char buffer[65536];
     size_t len = fread(buffer,1,65535,fp);
     fclose(fp);
@@ -95,7 +109,7 @@ static string ParseData(char* filename, string& inString)
     buffer[len] = 0;
     inString = RemoveWhiteSpace(buffer,len);
 
-    ReadFileStream is(filename);
+    ReadFileStream is(path);
     JsonReader reader(is);
     Document doc;
     reader >> doc;
@@ -180,17 +194,17 @@ TEST(Json,Binary)
 
 TEST(Json,SampleGlossary)
 {
-    char filename[] = "sample/glossary.json";
     string inString;
-    string outString = ParseData(filename,inString);
+    string outString = ParseData("glossary.json",inString);
+    ASSERT_NE(inString.size(), size_t(0)) << "Unable to read sample/glossary.json";
     EXPECT_STREQ( outString.c_str(), inString.c_str());
 }
 
 TEST(Json,SampleWebApp)
 {
-    char filename[] = "sample/webapp.json";
     string inString;
-    string outString = ParseData(filename,inString);
+    string outString = ParseData("webapp.json",inString);
+    ASSERT_NE(inString.size(), size_t(0)) << "Unable to read sample/webapp.json";
     EXPECT_STREQ( outString.c_str(), inString.c_str());
 }
 
