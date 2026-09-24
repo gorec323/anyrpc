@@ -431,7 +431,7 @@ void MessagePackReader::ParseBin(size_t length)
         char* buffer = is_.PutBegin();
         if (length != is_.Skip(length))
             anyrpc_throw(AnyRpcErrorTermination, "Parsing was terminated");
-        handler_->Binary((unsigned char*)buffer,length,copy_);  // binary data is not null terminated so it can be referenced
+        handler_->Binary(reinterpret_cast<unsigned char*>(buffer),length,copy_);  // binary data is not null terminated so it can be referenced
         ResetToken();
         is_.PutEnd();
     }
@@ -441,7 +441,7 @@ void MessagePackReader::ParseBin(size_t length)
         char buffer[256];
         if (length != is_.Read(buffer, length))
             anyrpc_throw(AnyRpcErrorTermination, "Parsing was terminated");
-        handler_->Binary((unsigned char*)buffer,length);
+        handler_->Binary(reinterpret_cast<unsigned char*>(buffer),length);
         ResetToken();
     }
     else
@@ -453,7 +453,7 @@ void MessagePackReader::ParseBin(size_t length)
             anyrpc_throw(AnyRpcErrorTermination, "Parsing was terminated");
         if (length != is_.Read(buffer, length))
             anyrpc_throw(AnyRpcErrorTermination, "Parsing was terminated");
-        handler_->Binary((unsigned char*)buffer,length);
+        handler_->Binary(reinterpret_cast<unsigned char*>(buffer),length);
         ResetToken();
         free(buffer);
     }

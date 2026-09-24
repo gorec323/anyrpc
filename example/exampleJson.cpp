@@ -26,8 +26,8 @@ int main()
     value["dateTime"].SetDateTime(time(NULL));
 
     Value binary;
-    char* binData = (char*)"\x0a\x0b\x0c\x0d\xff\x00\xee\xdd";
-    binary.SetBinary( (unsigned char*)binData, 8);
+    const char* binData = "\x0a\x0b\x0c\x0d\xff\x00\xee\xdd";
+    binary.SetBinary(reinterpret_cast<const unsigned char*>(binData), 8);
     value.AddMember( "binary", binary );
 
     Value array;
@@ -56,7 +56,7 @@ int main()
 
     // Use string data and parse in place.
     // This will modify the string and reference value strings directly from the input string.
-    InSituStringStream sstream((char*)json, jsonLength);
+    InSituStringStream sstream(const_cast<char*>(json), jsonLength);
     JsonReader jsonreader(sstream);
     jsonreader >> doc;
     if (jsonreader.HasParseError())

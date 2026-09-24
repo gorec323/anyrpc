@@ -47,6 +47,9 @@ endif ()
 # Create the executable with the extra files added
 add_executable( testAnyRPC ${ANYRPC_CPP_TESTS} )
 
+# gtest requires C++14+ which overrides the project-wide default of C++11
+set_target_properties( testAnyRPC PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON )
+
 # Add pthreads on Linux
 if (UNIX AND NOT APPLE)
     set(THREADS_PREFER_PTHREAD_FLAG ON)

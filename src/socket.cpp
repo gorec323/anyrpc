@@ -83,14 +83,14 @@ void Socket::Close()
 
 int Socket::SetReuseAddress(int param)
 {
-    int result = setsockopt( fd_, SOL_SOCKET, SO_REUSEADDR, (char*)&param, sizeof(param) );
+    int result = setsockopt( fd_, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&param), sizeof(param) );
     log_debug( "SetReuseAddress: param=" << param << ", result=" << result);
     return result;
 }
 
 int Socket::SetKeepAlive(int param)
 {
-    int result = setsockopt( fd_, SOL_SOCKET, SO_KEEPALIVE, (char*)&param, sizeof(param) );
+    int result = setsockopt( fd_, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char*>(&param), sizeof(param) );
     log_debug( "SetKeepAlive: param=" << param << ", result=" << result);
     return result;
 }
@@ -119,21 +119,23 @@ int Socket::SetKeepAliveInterval(int startTime, int interval, int probeCount)
     }
     return result;
 #else
-    int result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPIDLE, (char*)&startTime, sizeof(startTime) );
+    int result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPIDLE, reinterpret_cast<char*>(&startTime), sizeof(startTime) );
     if (result < 0)
     {
         log_debug( "SetKeepAliveInterval: set keep idle result = " << result );
         return result;
     }
-    result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPINTVL, (char*)&interval, sizeof(interval) );
+    result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPINTVL, reinterpret_cast<char*>(&interval), sizeof(interval) );
     if (result < 0)
     {
         log_debug( "SetKeepAliveInterval: set interval result = " << result );
         return result;
     }
-    result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPCNT, (char*)&probeCount, sizeof(probeCount) );
+    result = setsockopt( fd_, IPPROTO_TCP, TCP_KEEPCNT, reinterpret_cast<char*>(&probeCount), sizeof(probeCount) );
     if (result < 0)
+    {
         log_debug( "SetKeepAliveInterval: set probe count result = " << result );
+    }
     return result;
 #endif
 }
@@ -166,7 +168,7 @@ int Socket::Bind( int port, uint32_t address )
     sockAddress.sin_port = htons( port );
     sockAddress.sin_addr.s_addr = address; // should already be in network order
 
-    int result = bind(fd_, (struct sockaddr*)&sockAddress, sizeof(sockAddress));
+    int result = bind(fd_, reinterpret_cast<struct sockaddr*>(&sockAddress), sizeof(sockAddress));
     SetLastError();  // the logging system may reset errno in Linux
     log_debug("Bind: port=" << port << ", address=0x" << std::hex << address << std::dec << ", result=" << result << ", err=" << err_);
     return result;
@@ -266,7 +268,7 @@ bool Socket::GetSockInfo(std::string& ip, unsigned& port) const
     // get socket local ip and local port
     sockaddr_in sa;
     socklen_t len = sizeof(struct sockaddr_in);
-    if (getsockname(fd_, (struct sockaddr *) &sa, &len) != 0)
+    if (getsockname(fd_, reinterpret_cast<struct sockaddr*>(&sa), &len) != 0)
     {
         log_warn("Error while calling getsockname (code " << errno << "). Could not identify local ip and port of socket.");
         return false;
@@ -285,7 +287,7 @@ bool Socket::GetPeerInfo(std::string& ip, unsigned& port) const
     // get ip and port of connected peer
     struct sockaddr_in sa;
     socklen_t len = sizeof(struct sockaddr_in);
-    if (getpeername(fd_, (struct sockaddr *)&sa, &len) != 0)
+    if (getpeername(fd_, reinterpret_cast<struct sockaddr*>(&sa), &len) != 0)
     {
         log_warn("Error while calling getpeername (code " << errno << "). Could not identify ip and port of peer.");
         return false;
@@ -312,7 +314,7 @@ SOCKET TcpSocket::Create()
 
 int TcpSocket::SetTcpNoDelay(int param)
 {
-    int result = setsockopt( fd_, IPPROTO_TCP, TCP_NODELAY, (char*)&param, sizeof(param) );
+    int result = setsockopt( fd_, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&param), sizeof(param) );
     log_debug( "SetTcpNoDelay: param=" << param << ", result=" << result);
     return result;
 }
@@ -442,7 +444,7 @@ bool TcpSocket::IsConnected(int timeout)
     // check for socket connection without error
     int optVal;
     int optLen = sizeof(optVal);
-    int getsockoptResult = getsockopt( fd_, SOL_SOCKET, SO_ERROR, (char*)&optVal, (socklen_t*)&optLen );
+    int getsockoptResult = getsockopt( fd_, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&optVal), reinterpret_cast<socklen_t*>(&optLen) );
     if ((getsockoptResult < 0) || (optVal != 0))
     {
         log_warn("IsConnected failed: OptVal=" << optVal << ", result=" << getsockoptResult);
@@ -480,7 +482,7 @@ int TcpSocket::Connect(const char* ipAddress, int port)
     connectedAddr.sin_port = htons( port );
     connectedAddr.sin_addr.s_addr = inet_addr( ipAddress );
 
-    int result = connect(fd_, (sockaddr*)&connectedAddr, sizeof(connectedAddr));
+    int result = connect(fd_, reinterpret_cast<sockaddr*>(&connectedAddr), sizeof(connectedAddr));
     SetLastError();
     connected_ = true;
     log_debug("Connect: ipAddress=" << ipAddress << ", port=" << port << ", result=" << result << ", err=" << err_);
@@ -514,10 +516,10 @@ bool UdpSocket::Send(const char* buffer, std::size_t length, std::size_t &bytesW
 
 #ifdef MSG_NOSIGNAL
     int numBytes = sendto( fd_, buffer+bytesWritten, static_cast<int>(length-bytesWritten), MSG_NOSIGNAL,
-                            (struct sockaddr *)&sendAddr, sizeof(sendAddr) );
+                            reinterpret_cast<struct sockaddr*>(&sendAddr), sizeof(sendAddr) );
 #else
     int numBytes = sendto( fd_, buffer+bytesWritten, static_cast<int>(length-bytesWritten), SO_NOSIGPIPE,
-                            (struct sockaddr *)&sendAddr, sizeof(sendAddr) );
+                            reinterpret_cast<struct sockaddr*>(&sendAddr), sizeof(sendAddr) );
 #endif
 
     SetLastError();
@@ -548,7 +550,7 @@ bool UdpSocket::Receive(char* buffer, int maxLength, int &bytesRead, bool &eof, 
     eof = false;
 
     int numBytes = recvfrom( fd_, buffer+bytesRead, maxLength-bytesRead, MSG_DONTWAIT,
-                             (struct sockaddr*)&receiveAddr, &receiveAddrLength);
+                             reinterpret_cast<struct sockaddr*>(&receiveAddr), &receiveAddrLength);
     SetLastError();  // the logging system may reset errno in Linux
     log_debug( "Receive: numBytes=" << numBytes << ", err=" << err_);
 

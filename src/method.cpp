@@ -51,7 +51,6 @@ MethodManager::MethodManager()
 
 MethodManager::~MethodManager()
 {
-    MethodMap::iterator it = methods_.begin();
     for (MethodMap::iterator it = methods_.begin(); it != methods_.end(); it++)
     {
         if (it->second->DeleteOnRemove())
@@ -169,7 +168,7 @@ void MethodManager::ExecuteMethod_FollowUpOperations(Method *method)
     }
 }
 
-void MethodManager::ListMethods(Value& params, Value& result)
+void MethodManager::ListMethods(Value& /* params */, Value& result)
 {
     int i=0;
     result.SetArray();

@@ -68,7 +68,7 @@ public:
     virtual void GenerateFaultResult(int errorCode, std::string const& msg, Value& result);
 
 protected:
-    log_define("AnyRPC.ClientHandler");
+    log_define("AnyRPC.ClientHandler")
 
 private:
 #if defined(ANYRPC_THREADING)
@@ -128,7 +128,7 @@ public:
     virtual bool GetPeerInfo(std::string& ip, unsigned& port) const { return socket_.GetPeerInfo(ip, port); }
 
 protected:
-    log_define("AnyRPC.Client");
+    log_define("AnyRPC.Client")
 
     enum ProcessHeaderResult { HEADER_COMPLETE, HEADER_INCOMPLETE, HEADER_FAULT };
 

@@ -64,7 +64,7 @@ private:
     int activeThreads_;
     bool delayedRemove_;
 
-    log_define("AnyRpc.Method");
+    log_define("AnyRpc.Method")
 };
 
 //! A MethodFunction is created with a function pointer that is call by the Execute method.
@@ -139,7 +139,7 @@ private:
     std::mutex mutex_;
     std::condition_variable condVarDelayedRemove_;
 
-    log_define("AnyRPC.MethodManager");
+    log_define("AnyRPC.MethodManager")
 };
 
 } // namespace anyrpc

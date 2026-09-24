@@ -109,7 +109,7 @@ private:
     unsigned char token_;
     bool tokenValid_;
 
-    log_define("AnyRPC.MpacReader");
+    log_define("AnyRPC.MpacReader")
 };
 
 } // namespace anyrpc

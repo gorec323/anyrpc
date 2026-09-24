@@ -642,7 +642,7 @@ void XmlReader::ParseNumber(int tag)
                 }
             }
 
-            d = (double)i64;
+            d = static_cast<double>(i64);
 #else
             // Use double to store significand in 32-bit architecture
             d = use64bit ? (double)i64 : (double)i;
@@ -727,7 +727,7 @@ void XmlReader::ParseNumber(int tag)
                     anyrpc_throw(AnyRpcErrorTagInvalid, PARSE_ERROR_FOUND_EXPECTED(tag,i8EndTag));
             }
             if (minus)
-                handler_->Int64(-(int64_t)i64);
+                handler_->Int64(-static_cast<int64_t>(i64));
             else
                 handler_->Uint64(i64);
         }
@@ -737,7 +737,7 @@ void XmlReader::ParseNumber(int tag)
             if (nextTag != (tag+1))
                 anyrpc_throw(AnyRpcErrorTagInvalid, PARSE_ERROR_FOUND_EXPECTED(nextTag,tag+1));
             if (minus)
-                handler_->Int(-(int)i);
+                handler_->Int(-static_cast<int>(i));
             else
                 handler_->Uint(i);
         }
@@ -1110,8 +1110,8 @@ void XmlReader::ParseBase64()
     int tag = GetNextTag();
     if (tag != base64EndTag)
         anyrpc_throw(AnyRpcErrorTagInvalid, PARSE_ERROR_FOUND_EXPECTED(tag,base64EndTag));
-
-    handler_->Binary( (const unsigned char*)str, length, copy_);
+    
+    handler_->Binary(reinterpret_cast<const unsigned char*>(str), length, copy_);
 }
 
 void XmlReader::ParseEmptyBase64()
@@ -1119,6 +1119,6 @@ void XmlReader::ParseEmptyBase64()
     log_trace();
     const char* str = "";
     size_t length = 0;
-    handler_->Binary( (const unsigned char*)str, length, copy_);
+    handler_->Binary(reinterpret_cast<const unsigned char*>(str), length, copy_);
 }
 }

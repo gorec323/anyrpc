@@ -242,7 +242,7 @@ void MessagePackWriter::DateTime(time_t dt)
     EndArray(2);
 }
 
-void MessagePackWriter::String(const char* str, size_t length, bool copy)
+void MessagePackWriter::String(const char* str, size_t length, bool /* copy */)
 {
 #if defined(BUILD_WITH_LOG4CPLUS)
     if (length < 10)
@@ -288,7 +288,7 @@ void MessagePackWriter::String(const char* str, size_t length, bool copy)
     os_.Put(str, length);
 }
 
-void MessagePackWriter::Binary(const unsigned char* str, size_t length, bool copy)
+void MessagePackWriter::Binary(const unsigned char* str, size_t length, bool /* copy */)
 {
     log_debug("Binary: length=" << length);
     // output the binary type identifier with the length
@@ -315,7 +315,7 @@ void MessagePackWriter::Binary(const unsigned char* str, size_t length, bool cop
         os_.Put(buf, 4);
     }
     // output the binary data block
-    os_.Put((const char*)str, length);
+    os_.Put(reinterpret_cast<const char*>(str), length);
 }
 
 void MessagePackWriter::StartMap(size_t memberCount)
@@ -351,7 +351,7 @@ void MessagePackWriter::Key(const char* str, size_t length, bool copy)
     String(str, length, copy);
 }
 
-void MessagePackWriter::EndMap(size_t memberCount)
+void MessagePackWriter::EndMap(size_t /* memberCount */)
 {
     log_debug("EndMap: count=" << memberCount);
     os_.Flush();
@@ -383,7 +383,7 @@ void MessagePackWriter::StartArray(size_t elementCount)
     }
 }
 
-void MessagePackWriter::EndArray(size_t elementCount)
+void MessagePackWriter::EndArray(size_t /* elementCount */)
 {
     log_debug("EndArray: count=" << elementCount);
     os_.Flush();

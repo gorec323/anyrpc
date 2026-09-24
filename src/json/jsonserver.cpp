@@ -70,7 +70,7 @@ bool JsonRpcHandler(MethodManager* manager, char* request, size_t length, Stream
         {
             // multi-call request
             int outIndex = 0;
-            for (int i=0; i<(int)message.Size(); i++)
+            for (int i=0; i<static_cast<int>(message.Size()); i++)
             {
                 Value singleResponse;
                 JsonExecuteSingleRequest(manager,message[i],singleResponse);

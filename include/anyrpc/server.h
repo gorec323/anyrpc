@@ -108,7 +108,7 @@ public:
     virtual void GetConnectionsPeerInfo(std::list<std::string>& ips, std::list<unsigned>& ports) const;
 
 protected:
-    log_define("AnyRPC.Server");
+    log_define("AnyRPC.Server")
 
     //! Create a new connection using the supplied socket
     virtual Connection* CreateConnection(SOCKET fd) = 0;

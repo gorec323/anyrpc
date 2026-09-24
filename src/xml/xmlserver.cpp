@@ -103,7 +103,7 @@ static void XmlExecuteMultiCall(MethodManager* manager, Value &params, Value &re
     log_debug("ExecuteMultiCall: params= " << params);
 
     result.SetSize(params.Size());
-    for (int i=0; i<(int)params.Size(); i++)
+    for (int i=0; i<static_cast<int>(params.Size()); i++)
     {
         Value singleParams;
         singleParams.Assign(params[i]);

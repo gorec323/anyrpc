@@ -58,7 +58,7 @@ protected:
     bool inSitu_;
     bool copy_;
 
-    log_define("AnyRPC.Reader");
+    log_define("AnyRPC.Reader")
 };
 } // namespace anyrpc
 

@@ -67,7 +67,7 @@ private:
 
     bool tagSkipFirstChar_;
 
-    log_define("AnyRPC.XmlReader");
+    log_define("AnyRPC.XmlReader")
 };
 
 } // namespace anyrpc

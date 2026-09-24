@@ -73,7 +73,7 @@ public:
     virtual void Flush() {}
 
 protected:
-    log_define("AnyRPC.Stream");
+    log_define("AnyRPC.Stream")
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -75,11 +75,15 @@ Connection::Connection(SOCKET fd, MethodManager* manager) :
     int result;
     result = socket_.SetNonBlocking();
     if (result != 0)
+    {
         log_warn("Could not set socket to non-blocking input mode: " << result);
+    }
 
     result = socket_.SetTcpNoDelay();
     if (result != 0)
+    {
         log_warn("Could not set socket to no delay: " << result);
+    }
 }
 
 Connection::~Connection()
@@ -114,7 +118,9 @@ void Connection::Initialize(bool preserveBufferData)
             }
         }
         else
+        {
             log_info("Initialize: Keep previous data: " << bufferLength_ << " bytes");
+        }
     }
     else
     {
@@ -362,10 +368,8 @@ bool HttpConnection::ReadHeader()
     bool eof;
     if (!socket_.Receive(buffer_+bufferLength_, MaxBufferLength-bufferLength_, bytesRead, eof))
     {
-        if (eof)
-            log_info("Client disconnect: error=" << socket_.GetLastError());
-        else
-            log_warn("Error while reading header: error=" << socket_.GetLastError() << ", bytesRead=" << bytesRead);
+        log_info_if(eof, "Client disconnect: error=" << socket_.GetLastError());
+        log_warn_if(!eof, "Error while reading header: error=" << socket_.GetLastError() << ", bytesRead=" << bytesRead);
         Initialize();
         return false;
     }
@@ -503,10 +507,8 @@ bool TcpConnection::ReadHeader()
     bool eof;
     if (!socket_.Receive(buffer_+bufferLength_, MaxBufferLength-bufferLength_, bytesRead, eof))
     {
-        if (eof)
-            log_info("Client disconnect: error=" << socket_.GetLastError());
-        else
-            log_warn("Error while reading header: error=" << socket_.GetLastError() << ", bytesRead=" << bytesRead);
+        log_info_if(eof, "Client disconnect: error=" << socket_.GetLastError());
+        log_warn_if(!eof, "Error while reading header: error=" << socket_.GetLastError() << ", bytesRead=" << bytesRead);
         Initialize();
         return false;
     }

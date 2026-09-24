@@ -69,8 +69,8 @@ int main()
     value["dateTime"].SetDateTime(time(NULL));
 
     Value binary;
-    char* binData = (char*)"\x0a\x0b\x0c\x0d\xff\x00\xee\xdd";
-    binary.SetBinary( (unsigned char*)binData, 8);
+    const char* binData = "\x0a\x0b\x0c\x0d\xff\x00\xee\xdd";
+    binary.SetBinary(reinterpret_cast<const unsigned char*>(binData), 8);
     value.AddMember( "binary", binary );
 
     Value array;
@@ -123,7 +123,7 @@ int main()
     // Read back from the string stream
     const char* mPack = wstream.GetBuffer();
     size_t mPacklength = wstream.Length();
-    InSituStringStream rstream((char*)mPack, mPacklength);
+    InSituStringStream rstream(const_cast<char*>(mPack), mPacklength);
     MessagePackReader insituReader(rstream);
     insituReader >> doc;
 

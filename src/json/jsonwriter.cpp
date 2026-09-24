@@ -97,7 +97,7 @@ void JsonWriter::DateTime(time_t dt)
     log_debug("DateTime: " << buffer);
 }
 
-void JsonWriter::String(const char* str, size_t length, bool copy)
+void JsonWriter::String(const char* str, size_t length, bool /* copy */)
 {
 #if defined(BUILD_WITH_LOG4CPLUS)
     if (length < 10)
@@ -131,7 +131,7 @@ void JsonWriter::String(const char* str, size_t length, bool copy)
         {
             os_.Put('\\');
             os_.Put(escape[c]);
-            if (escape[(unsigned char)c] == 'u')
+            if (escape[static_cast<unsigned char>(c)] == 'u')
             {
                 os_.Put('0');
                 os_.Put('0');
@@ -233,7 +233,7 @@ void JsonWriter::DecodeUtf8(const char* str, size_t length, size_t &pos, unsigne
     anyrpc_throw(AnyRpcErrorUtf8Sequence, "Invalid utf8 sequence, c=" << c);
 }
 
-void JsonWriter::Binary(const unsigned char* str, size_t length, bool copy)
+void JsonWriter::Binary(const unsigned char* str, size_t length, bool /* copy */)
 {
     log_debug("Binary: length=" << length);
     char buffer[100];
@@ -266,7 +266,7 @@ void JsonWriter::MapSeparator()
     NewLine();
 }
 
-void JsonWriter::EndMap(size_t memberCount)
+void JsonWriter::EndMap(size_t /* memberCount */)
 {
     log_debug("EndMap: count=" << memberCount);
     DecLevel();
@@ -275,7 +275,7 @@ void JsonWriter::EndMap(size_t memberCount)
     os_.Flush();
 }
 
-void JsonWriter::StartArray(size_t elementCount)
+void JsonWriter::StartArray(size_t /* elementCount */)
 {
     log_debug("StartArray");
     NewLine();
@@ -291,7 +291,7 @@ void JsonWriter::ArraySeparator()
     NewLine();
 }
 
-void JsonWriter::EndArray(size_t elementCount)
+void JsonWriter::EndArray(size_t /* elementCount */)
 {
     log_debug("EndArray: count=" << elementCount);
     DecLevel();

@@ -52,6 +52,36 @@ endif ()
 
 # Create the libraries with these header and source files
 add_library( anyrpc ${ANYRPC_LIB_TYPE} ${ANYRPC_SOURCES} ${ANYRPC_HEADERS} )
+
+if (NOT MSVC)
+
+    target_compile_options(anyrpc
+    PRIVATE
+        -Werror
+        -Wall
+        -Wextra
+        -Wpedantic
+        -pedantic-errors
+        -Wno-attributes
+        -Wcast-align
+        -Wcast-qual
+        -Wenum-compare
+        -Wredundant-decls
+        # C++ only
+        $<$<COMPILE_LANGUAGE:CXX>:-ftemplate-backtrace-limit=0>
+        $<$<COMPILE_LANGUAGE:CXX>:-Wctor-dtor-privacy>
+        $<$<COMPILE_LANGUAGE:CXX>:-Wnon-virtual-dtor>
+        $<$<COMPILE_LANGUAGE:CXX>:-Wold-style-cast>
+        # GCC and MinGW, not Clang
+        $<$<CXX_COMPILER_ID:GNU>:-Wlogical-op>
+        $<$<CXX_COMPILER_ID:GNU>:-Wduplicated-cond>
+        # in MinGW 7.3.0 -Wduplicated-branches does not work well in Boost 1.82.0
+        # TODO: check with more recent versions of MinGW,
+        # 8.0.0 -- because it's bigger than 7.3.0
+        $<$<CXX_COMPILER_ID:GNU>:$<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,8.0.0>:-Wduplicated-branches>> # GCC 7
+    )
+endif ()
+
 target_link_libraries( anyrpc ${ASAN_LIBRARY} ${LOG4CPLUS_LIBRARIES})
 
 # Need the winsock library for Windows

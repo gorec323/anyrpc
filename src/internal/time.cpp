@@ -74,7 +74,7 @@ int MilliTimeDiff( struct timeval &time1, struct timeval &time2 )
 
 int64_t MicroTimeDiff( struct timeval &time1, struct timeval &time2 )
 {
-    return (int64_t)(time1.tv_sec - time2.tv_sec) * 1000000 + (int64_t)(time1.tv_usec - time2.tv_usec);
+    return static_cast<int64_t>(time1.tv_sec - time2.tv_sec) * 1000000 + static_cast<int64_t>(time1.tv_usec - time2.tv_usec);
 }
 
 void MilliSleep(unsigned ms)

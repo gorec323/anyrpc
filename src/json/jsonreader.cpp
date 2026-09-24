@@ -230,7 +230,7 @@ void JsonReader::ParseStringToStream(Stream& os)
         else if (c == '\0')
             anyrpc_throw(AnyRpcErrorStringMissingQuotationMark,
                     "Missing a closing quotation mark in string");
-        else if ((unsigned)c < 0x20) // RFC 4627: unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
+        else if (static_cast<unsigned>(c) < 0x20) // RFC 4627: unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
             anyrpc_throw(AnyRpcErrorStringEscapeInvalid,
                     "Invalid escape character in string");
         else
@@ -507,10 +507,10 @@ void JsonReader::ParseNumber()
                 }
             }
 
-            d = (double)i64;
+            d = static_cast<double>(i64);
 #else
             // Use double to store significand in 32-bit architecture
-            d = use64bit ? (double)i64 : (double)i;
+            d = use64bit ? static_cast<double>(i64) : static_cast<double>(i);
 #endif
             useDouble = true;
         }
@@ -576,14 +576,14 @@ void JsonReader::ParseNumber()
         if (use64bit)
         {
             if (minus)
-                handler_->Int64(-(int64_t)i64);
+                handler_->Int64(-static_cast<int64_t>(i64));
             else
                 handler_->Uint64(i64);
         }
         else
         {
             if (minus)
-                handler_->Int(-(int)i);
+                handler_->Int(-static_cast<int>(i));
             else
                 handler_->Uint(i);
         }

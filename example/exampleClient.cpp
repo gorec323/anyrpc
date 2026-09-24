@@ -28,7 +28,7 @@ log_define("main");
  *  a multithreaded version or the client access will be serialized.
  */
 
-void TestClient(Client* client, char* ipAddress, int port)
+void TestClient(Client* client, const char* ipAddress, int port)
 {
     Value params;
     Value result;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     }
 
     // Determine the IP Address
-    char* ipAddress = (char*)"127.0.0.1";
+    const char* ipAddress = "127.0.0.1";
     if (argc > 2)
         ipAddress = argv[2];
 

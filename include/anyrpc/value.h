@@ -343,7 +343,7 @@ public:
     //@}
 
 protected:
-    log_define("AnyRPC.Value");
+    log_define("AnyRPC.Value")
 
 private:
 
@@ -423,8 +423,8 @@ private:
         char str[MaxChars];
 
         inline static bool Usable(std::size_t len) { return (MaxSize >= len); }
-        inline void SetLength(std::size_t len) { str[LenPos] = (char) (MaxSize - len); }
-        inline std::size_t GetLength() const { return (std::size_t) (MaxSize - str[LenPos]); }
+        inline void SetLength(std::size_t len) { str[LenPos] = static_cast<char> (MaxSize - len); }
+        inline std::size_t GetLength() const { return static_cast<std::size_t> (MaxSize - str[LenPos]); }
     };
 
     // By using proper binary layout, retrieval of different integer types do not need conversions.
@@ -535,6 +535,7 @@ public:
     MemberIterator() : ptr_(0) {}
     MemberIterator(pointer ptr) : ptr_(ptr) {}
     MemberIterator(const MemberIterator& mit) : ptr_(mit.ptr_) {}
+    MemberIterator& operator=(const MemberIterator& mit) { ptr_ = mit.ptr_; return *this; }
 
     //! @name dereference
     //@{

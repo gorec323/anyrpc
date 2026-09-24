@@ -86,7 +86,7 @@ private:
     //! Write an unsigned 64bit number to the output stream
     void WriteUint64(uint64_t u64);
 
-    log_define("AnyRPC.MpacWriter");
+    log_define("AnyRPC.MpacWriter")
 };
 
 } // namespace anyrpc

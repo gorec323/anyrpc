@@ -277,7 +277,9 @@ void Client::PreserveReceiveBuffer()
             }
         }
         else
+        {
             log_debug("PreserveReceiveBuffer: Keep any previous data: " << bufferLength_ << " bytes");
+        }
     }
     else
     {
@@ -294,7 +296,7 @@ unsigned Client::GetTimeLeft()
 
     int timeUsed = MilliTimeDiff(currentTime,startTime_);
 
-    int timeLeft = std::max(0,(int)timeout_ - timeUsed);
+    int timeLeft = std::max(0,static_cast<int>(timeout_) - timeUsed);
 
     log_debug("GetTimeLeft: timeout=" << timeout_ << ", timeLeft=" << timeLeft << ", timeUsed=" << timeUsed);
     return timeLeft;
@@ -352,7 +354,7 @@ bool Client::GenerateRequest(const char* method, Value& params, bool notificatio
     return result;
 }
 
-bool Client::WriteRequest(Value& result)
+bool Client::WriteRequest(Value& /* result */)
 {
     log_trace();
 

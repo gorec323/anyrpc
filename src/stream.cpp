@@ -295,7 +295,7 @@ void InSituStringStream::Put(const char *str, size_t n)
     anyrpc_assert(dst_ != 0, AnyRpcErrorIllegalCall, "PutBegin was not called");
     if (dst_ != 0)
     {
-        anyrpc_assert( src_ >=  (dst_ + n), AnyRpcErrorBufferOverrun, "Dst will overrun src: dst_=" << (void*)dst_ << ", src_=" << (void*)src_ << ", len=" << n );
+        anyrpc_assert( src_ >=  (dst_ + n), AnyRpcErrorBufferOverrun, "Dst will overrun src: dst_=" << static_cast<void*>(dst_) << ", src_=" << static_cast<void*>(src_) << ", len=" << n );
         n = std::min(static_cast<size_t>(src_ - dst_), n);
         memcpy(dst_,str,n);
         dst_ += n;

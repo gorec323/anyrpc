@@ -79,7 +79,7 @@ public:
         { handler_ = handler; requestContentType_ = requestContentType; responseContentType_ = responseContentType; }
 
 private:
-    log_define("AnyRPC.RpcHandler");
+    log_define("AnyRPC.RpcHandler")
 
     RpcHandler* handler_;               //!< Function pointer to RPC handler
 #if defined(ANYRPC_REGEX)
@@ -157,7 +157,7 @@ public:
 #endif
 
 protected:
-    log_define("AnyRPC.Connection");
+    log_define("AnyRPC.Connection")
 
     //! Read the request header
     virtual bool ReadHeader() = 0;

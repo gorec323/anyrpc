@@ -56,7 +56,7 @@ public:
     std::string& GetContentType()   { return contentType_; }
 
 protected:
-    log_define("AnyRPC.HttpHeader");
+    log_define("AnyRPC.HttpHeader")
 
     //! Process the first header line into three parts
     virtual ResultEnum ProcessFirstLine(std::string &line);

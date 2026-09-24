@@ -67,7 +67,7 @@ Value::Value(ValueType type)
     flags_ = defaultFlags[type];
 
     // zero all the data
-    memset((void*)&data_, 0, sizeof(data_));
+    memset(reinterpret_cast<void*>(&data_), 0, sizeof(data_));
 
     // Use ShortString to store empty string or binary.
     if ((type == StringType) || (type == BinaryType))
@@ -221,7 +221,7 @@ Value::Value(const unsigned char* s, std::size_t length, bool copy) : flags_(Con
     else
     {
         // Just point to the given data. It should be a constant at least over the lifetime of the Value.
-        data_.s.str = (const char*)(s);
+        data_.s.str = reinterpret_cast<const char*>(s);
         data_.s.length = length;
     }
 }
@@ -259,7 +259,7 @@ void Value::Destroy()
         if ((flags_ == CopyStringFlag) || (flags_ == CopyBinaryFlag))
         {
             // the data was allocated so it must be freed
-            free((char*) data_.s.str);
+            free(const_cast<char*>(data_.s.str));
         }
         else if (IsArray())
         {
@@ -424,7 +424,14 @@ void Value::AddMemberCheckCapacity()
             if (newCapacity > MaxMapCapacity)   // gcc didn't like using std::max() with MaxMapCapacity
                 newCapacity = MaxMapCapacity;
             m.capacity = newCapacity;
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
             m.members = reinterpret_cast<Member*>(realloc(m.members, m.capacity * sizeof(Member)));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         }
     }
     anyrpc_assert(m.size < m.capacity, AnyRpcErrorMemoryAllocation, "Too many members, size=" << m.size << ", capacity=" << m.capacity);
@@ -551,7 +558,7 @@ Value& Value::AddMember(const wchar_t* ws, std::size_t length, Value& value, boo
     return data_.m.members[data_.m.size-1].value;
 }
 
-Value& Value::AddMember(const wchar_t* ws, std::size_t length, bool copy)
+Value& Value::AddMember(const wchar_t* ws, std::size_t length, bool /* copy */)
 {
     log_debug("AddMember, key only");
     AddMemberCheckCapacity();
@@ -615,7 +622,7 @@ Value& Value::SetArray(std::size_t capacity)
     anyrpc_assert(capacity < MaxArrayCapacity, AnyRpcErrorMemoryAllocation, "Too many elements, size=" << capacity << ", capacity=" << MaxArrayCapacity);
 
     // allocate the data and set to invalid
-    data_.a.elements = (Value*)calloc(capacity, sizeof(Value));
+    data_.a.elements = static_cast<Value*>(calloc(capacity, sizeof(Value)));
     data_.a.capacity = static_cast<uint32_t>(capacity);
     data_.a.size = static_cast<uint32_t>(capacity);
     return *this;
@@ -649,7 +656,14 @@ Value& Value::Reserve(size_t newCapacity)
 
     if (newCapacity > data_.a.capacity)
     {
-        data_.a.elements = (Value*)realloc(data_.a.elements, newCapacity * sizeof(Value));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+        data_.a.elements = static_cast<Value*>(realloc(data_.a.elements, newCapacity * sizeof(Value)));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         data_.a.capacity = static_cast<uint32_t>(newCapacity);
     }
     return *this;
@@ -665,7 +679,14 @@ Value& Value::SetSize(size_t newSize)
 
     if (newSize > data_.a.capacity)
     {
-        data_.a.elements = (Value*)realloc(data_.a.elements, newSize * sizeof(Value));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+        data_.a.elements = static_cast<Value*>(realloc(data_.a.elements, newSize * sizeof(Value)));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         data_.a.capacity = static_cast<uint32_t>(newSize);
     }
     if (newSize > data_.a.size)
@@ -699,15 +720,15 @@ float Value::GetFloat() const
     if ((flags_ & FloatFlag) != 0)
         return data_.n.f;   // exact type, no conversion.
     if ((flags_ & DoubleFlag) != 0)
-        return (float) data_.n.d;   // double -> float (may lose precision)
+        return static_cast<float>(data_.n.d);   // double -> float (may lose precision)
     if ((flags_ & IntFlag) != 0)
-        return (float) data_.n.i.i;   // int -> float (may lose precision)
+        return static_cast<float>(data_.n.i.i);   // int -> float (may lose precision)
     if ((flags_ & UintFlag) != 0)
-        return (float) data_.n.u.u;   // unsigned -> float (may lose precision)
+        return static_cast<float>(data_.n.u.u);   // unsigned -> float (may lose precision)
     if ((flags_ & Int64Flag) != 0)
-        return (float) data_.n.i64;   // int64_t -> float (may lose precision)
+        return static_cast<float>(data_.n.i64);   // int64_t -> float (may lose precision)
     anyrpc_assert((flags_ & Uint64Flag) != 0, AnyRpcErrorValueAccess, "Unknown number type=" << flags_);
-    return (float) data_.n.u64;   // uint64_t -> float (may lose precision)
+    return static_cast<float>(data_.n.u64);   // uint64_t -> float (may lose precision)
 }
 
 double Value::GetDouble() const
@@ -722,9 +743,9 @@ double Value::GetDouble() const
     if ((flags_ & UintFlag) != 0)
         return data_.n.u.u;   // unsigned -> double
     if ((flags_ & Int64Flag) != 0)
-        return (double) data_.n.i64;   // int64_t -> double (may lose precision)
+        return static_cast<double>(data_.n.i64);   // int64_t -> double (may lose precision)
     anyrpc_assert((flags_ & Uint64Flag) != 0, AnyRpcErrorValueAccess, "Unknown number type=" << flags_);
-    return (double) data_.n.u64;   // uint64_t -> double (may lose precision)
+        return static_cast<double>(data_.n.u64);   // uint64_t -> double (may lose precision)
 }
 
 Value& Value::SetInt(int i)
@@ -838,7 +859,7 @@ Value& Value::SetString(const wchar_t* ws, std::size_t length)
 const unsigned char* Value::GetBinary() const
 {
     anyrpc_assert(IsBinary(), AnyRpcErrorValueAccess, "Not Binary, type=" << GetType());
-    return (unsigned char*)((flags_ & InlineStrFlag) ? data_.ss.str : data_.s.str);
+    return reinterpret_cast<const unsigned char*>((flags_ & InlineStrFlag) ? data_.ss.str : data_.s.str);
 }
 
 std::size_t Value::GetBinaryLength() const
@@ -866,7 +887,7 @@ void Value::CopyString(const char* s, size_t length)
     }
     else
     {
-        str = (char *) malloc((length + 1) * sizeof(char));
+        str = static_cast<char*>(malloc((length + 1) * sizeof(char)));
         anyrpc_assert(str != 0, AnyRpcErrorMemoryAllocation, "Data allocation failed");
         if (str == 0)
             return;
@@ -890,7 +911,7 @@ void Value::CopyBinary(const unsigned char* s, size_t length)
     }
     else
     {
-        str = (char *) malloc(length);
+        str = static_cast<char*>(malloc(length));
         anyrpc_assert(str != 0, AnyRpcErrorMemoryAllocation, "Data allocation failed");
         if (str == 0)
             return;
@@ -1125,7 +1146,7 @@ void Value::CopyInternal(const Value& value)
                        (value.flags_ & InlineStrFlag) ? value.data_.ss.GetLength() : value.data_.s.length );
             break;
         case BinaryType:
-            SetBinary( (const unsigned char*)((value.flags_ & InlineStrFlag) ? value.data_.ss.str : value.data_.s.str),
+            SetBinary(reinterpret_cast<const unsigned char*>((value.flags_ & InlineStrFlag) ? value.data_.ss.str : value.data_.s.str),
                        (value.flags_ & InlineStrFlag) ? value.data_.ss.GetLength() : value.data_.s.length );
             break;
         case ArrayType:
@@ -1162,7 +1183,7 @@ bool Value::ConvertBase64()
         return false;
     }
 
-    unsigned char* str = (unsigned char*)GetString();
+    unsigned char* str = reinterpret_cast<unsigned char*>(const_cast<char*>(GetString()));
     size_t length = GetStringLength();
 
     size_t convertedLength = Base64Decode(str, str, length);
@@ -1199,7 +1220,7 @@ MemberIterator MemberIterator::operator++()
     return *this;
 }
 
-MemberIterator MemberIterator::operator++(int junk)
+MemberIterator MemberIterator::operator++(int /* junk */)
 {
     MemberIterator i=*this;
     ptr_++;
@@ -1212,7 +1233,7 @@ MemberIterator MemberIterator::operator--()
     return *this;
 }
 
-MemberIterator MemberIterator::operator--(int junk)
+MemberIterator MemberIterator::operator--(int /* junk */)
 {
     MemberIterator i=*this;
     ptr_--;

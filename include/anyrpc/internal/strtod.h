@@ -79,7 +79,7 @@ inline double StrtodNormalPrecision(double d, int p)
 
 inline void DoubleExtractPower(double &d, int &p)
 {
-    p = (int)floor(log10(d));
+    p = static_cast<int>(floor(log10(d)));
     if (p > 0)
         d /= internal::Pow10(p);
     else if (p >= -308)

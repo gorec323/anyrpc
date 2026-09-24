@@ -51,7 +51,7 @@ private:
     void ParseArray();
     void ParseNumber();
 
-    log_define("AnyRPC.JsonReader");
+    log_define("AnyRPC.JsonReader")
 };
 
 } // namespace anyrpc

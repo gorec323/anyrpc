@@ -107,7 +107,7 @@ private:
     int level_;                     //!< Current indent level
     unsigned precision_;            //!< Number of digits of precision when using scientific notation for doubles
 
-    log_define("AnyRPC.JsonWriter");
+    log_define("AnyRPC.JsonWriter")
 };
 
 //! Convert value to Json string

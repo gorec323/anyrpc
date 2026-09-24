@@ -118,7 +118,7 @@ void XmlWriter::DateTime(time_t dt)
     log_debug("DateTime: " << buffer);
 }
 
-void XmlWriter::String(const char* str, size_t length, bool copy)
+void XmlWriter::String(const char* str, size_t length, bool /* copy */)
 {
     if (length < 10)
         log_debug("String: length=" << length << ", str=" << str);
@@ -166,8 +166,8 @@ void XmlWriter::StringData(const char* str, size_t length)
                 case 'u' :
                 {
                     os_.Put("&#x");
-                    os_.Put(hexDigits[(unsigned char)c >> 4]);
-                    os_.Put(hexDigits[(unsigned char)c & 0xF]);
+                    os_.Put(hexDigits[static_cast<unsigned char>(c) >> 4]);
+                    os_.Put(hexDigits[static_cast<unsigned char>(c) & 0xF]);
                     os_.Put(';');
                     break;
                 }
@@ -182,7 +182,7 @@ void XmlWriter::StringData(const char* str, size_t length)
     }
 }
 
-void XmlWriter::Binary(const unsigned char* str, size_t length, bool copy)
+void XmlWriter::Binary(const unsigned char* str, size_t length, bool /* copy */)
 {
     log_debug("Binary: length=" << length);
     os_.Put( "<value><base64>" );
@@ -196,7 +196,7 @@ void XmlWriter::StartMap()
     StartToken("<value><struct>");
 }
 
-void XmlWriter::Key(const char* str, size_t length, bool copy)
+void XmlWriter::Key(const char* str, size_t length, bool /* copy */)
 {
     log_debug("Key: length=" << length << ", str=" << str);
     StartLine();
@@ -239,7 +239,7 @@ void XmlWriter::ArraySeparator()
     StartLine();
 }
 
-void XmlWriter::EndArray(size_t elementCount)
+void XmlWriter::EndArray(size_t /* elementCount */)
 {
     log_debug("EndArray: count=" << elementCount);
     EndToken("</data></array></value>");

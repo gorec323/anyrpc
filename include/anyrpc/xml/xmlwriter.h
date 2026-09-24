@@ -94,14 +94,14 @@ private:
     //! Convert a double precision value to a string without using exponents
     void DoubleToStream(Stream& os, double value);
     inline unsigned LeadDigit(double arg, double precision)
-        { return (std::min)( (unsigned)9, (unsigned)(arg + precision)); }
+        { return (std::min)(static_cast<unsigned>(9), static_cast<unsigned>(arg + precision)); }
 
     Stream& os_;                    //!< Stream to write the messagepack representation to
     bool pretty_;                   //!< Write using tabs and newlines to make it easier for a person to read
     int level_;                     //!< Current indent level
     unsigned precision_;            //!< Number of digits of precision when using scientific notation for doubles
 
-    log_define("AnyRPC.XmlWriter");
+    log_define("AnyRPC.XmlWriter")
 };
 
 //! Convert value to Xml string

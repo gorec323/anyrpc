@@ -53,7 +53,7 @@ XmlTcpClient::XmlTcpClient(const char* host, int port) :
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool XmlClientHandler::GenerateRequest(const char* method, Value& params, Stream& os, unsigned& requestId, bool notification)
+bool XmlClientHandler::GenerateRequest(const char* method, Value& params, Stream& os, unsigned& /* requestId */, bool /* notification */)
 {
     log_trace();
 
@@ -66,7 +66,7 @@ bool XmlClientHandler::GenerateRequest(const char* method, Value& params, Stream
     if (params.IsArray())
     {
         // write each element of the array as a separate param
-        for (int i=0; i<(int)params.Size(); i++)
+        for (int i=0; i<static_cast<int>(params.Size()); i++)
         {
             os.Put("<param>");
             params[i].Traverse(xmlStrWriter);
@@ -86,7 +86,7 @@ bool XmlClientHandler::GenerateRequest(const char* method, Value& params, Stream
     return true;
 }
 
-ProcessResponseEnum XmlClientHandler::ProcessResponse(char* response, size_t length, Value& result, unsigned requestId, bool notification)
+ProcessResponseEnum XmlClientHandler::ProcessResponse(char* response, size_t length, Value& result, unsigned /* requestId */, bool /* notification */)
 {
     log_trace();
     ProcessResponseEnum processResponse = ProcessResponseErrorClose;

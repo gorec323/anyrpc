@@ -98,7 +98,7 @@ public:
     void ConvertExtensions(bool convert=true) { convertExtensions_ = convert; }
 
 protected:
-    log_define("AnyRPC.Doc");
+    log_define("AnyRPC.Doc")
 
 private:
     //! Convert a string to a DateTime type

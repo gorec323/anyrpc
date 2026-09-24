@@ -61,7 +61,7 @@ public:
     virtual void Uint(unsigned u) = 0;
     virtual void Int64(int64_t i64) = 0;
     virtual void Uint64(uint64_t u64) = 0;
-    virtual void Float(float f) { Double( (double)f ); }
+    virtual void Float(float f) { Double( static_cast<double>(f) ); }
     virtual void Double(double d) = 0;
     //@}
 
@@ -83,7 +83,7 @@ public:
     //@}
 
 protected:
-    log_define("AnyRPC.Handler");
+    log_define("AnyRPC.Handler")
 
 private:
     // Prohibit copy constructor & assignment operator.
